@@ -4,18 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { useForm, Form, Controller } from "react-hook-form"
 import toast from "react-hot-toast";
-import { z } from "zod";
+import { loginSchema, LoginSchema } from "../model/login";
+import { login } from "../api/login";
+import { useRouter } from "next/navigation";
 
-
-const loginSchema = z.object({
-    username: z.string(),
-    password: z.string()
-})
-
-type LoginSchema = z.infer<typeof loginSchema>
 
 
 function LoginForm() {
+
+    const router = useRouter();
 
     const form = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
@@ -54,8 +51,15 @@ function LoginForm() {
     )
 
 
-    function onSubmit(values: LoginSchema) {
-        console.log(values)
+    async function onSubmit(values: LoginSchema) {
+        const response = await login(values)
+
+        if (response.success) {
+            toast.success("User successfully log in")
+            router.push("/")
+        } else {
+            toast.error(response.error ?? "")
+        }
     }
 }
 

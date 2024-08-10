@@ -15,3 +15,17 @@ model Product {
   img         String
   isVisible   Boolean
 }
+
+model User {
+  id             String    @id @default(cuid())
+  username       String
+  hashedPassword String
+  Session        Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
